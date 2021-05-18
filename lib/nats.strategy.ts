@@ -70,7 +70,7 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     //       );
     const that = this;
     const subscribe = async (channel: string) => {
-      const sub = client.subscribe(channel);
+      const sub = client.subscribe(channel) as any;
 
       for await (const msg of sub) {
         await that.handleMessage(
