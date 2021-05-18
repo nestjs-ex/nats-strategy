@@ -1,0 +1,72 @@
+{
+  "name": "@nestjs-ex/nats-strategy",
+  "version": "7.1.1",
+  "description": "NATS v2 strategy and client for nestjs microservice",
+  "author": "pnthanh",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write \"**/*.ts\"",
+    "lint": "eslint \"lib/**/*.ts\" --fix",
+    "test": "jest --config=jest.json",
+    "test:watch": "jest --config=jest.json --watch",
+    "test:coverage": "jest --config=jest.json --coverage --coverageDirectory=coverage",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.json",
+    "precommit": "lint-staged",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public",
+    "prerelease": "npm run build",
+    "release": "release-it"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^6.0.0 || ^7.0.0",
+    "@nestjs/microservices": "^6.0.0 || ^7.0.0",
+    "nats": "^2.0.0"
+  },
+  "dependencies": {
+    "nanoid": "3.1.23",
+    "nats": "2.0.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "12.1.1",
+    "@commitlint/config-angular": "12.1.1",
+    "@nestjs/common": "7.6.15",
+    "@nestjs/core": "7.6.15",
+    "@nestjs/microservices": "7.6.15",
+    "@nestjs/testing": "7.6.15",
+    "@types/jest": "26.0.23",
+    "@types/node": "7.10.14",
+    "@typescript-eslint/eslint-plugin": "4.23.0",
+    "@typescript-eslint/parser": "4.23.0",
+    "eslint": "7.26.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.22.1",
+    "husky": "6.0.0",
+    "jest": "26.6.3",
+    "lint-staged": "11.0.0",
+    "prettier": "2.3.0",
+    "reflect-metadata": "0.1.13",
+    "release-it": "14.6.2",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.5.6",
+    "typescript": "3.9.9"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -c .commitlintrc.json -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nestjs/jwt"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
