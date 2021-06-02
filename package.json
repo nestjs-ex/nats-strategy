@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "nanoid": "3.1.23",
-    "nats": "2.0.4"
+    "nats": "2.0.6"
   },
   "devDependencies": {
     "@commitlint/cli": "12.1.4",
