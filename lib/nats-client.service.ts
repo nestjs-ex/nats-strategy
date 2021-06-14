@@ -80,7 +80,7 @@ export class NatsClient extends ClientProxy {
     const serializedPacket = this.serializer.serialize(partialPacket);
 
     this.natsClient
-      .request(channel, this._jc.encode(serializedPacket))
+      .request(channel, this._jc.encode(serializedPacket), { timeout: 60000 }) // 60s timeout
       .then((msg) => {
         callback(this._jc.decode(msg.data));
       })
