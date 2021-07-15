@@ -1,19 +1,19 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import {
   ClientProxy,
-  PacketId,
+  // PacketId,
   ReadPacket,
   WritePacket,
 } from '@nestjs/microservices';
-import { ERROR_EVENT, MESSAGE_EVENT } from '@nestjs/microservices/constants';
-import { share, tap } from 'rxjs/operators';
+// import { ERROR_EVENT, MESSAGE_EVENT } from '@nestjs/microservices/constants';
+// import { share, tap } from 'rxjs/operators';
 import * as nats from 'nats';
 
 import {
   NATS_CLIENT_MODULE_OPTIONS,
-  NATS_DEFAULT_URL,
+  // NATS_DEFAULT_URL,
 } from './nats-client.constants';
-import { NatsClientModuleOptions } from './interfaces';
+// import { NatsClientModuleOptions } from './interfaces';
 
 @Injectable()
 export class NatsClient extends ClientProxy {
@@ -74,13 +74,13 @@ export class NatsClient extends ClientProxy {
   protected publish(
     partialPacket: ReadPacket,
     callback: (packet: WritePacket) => any,
-  ): Function {
+  ): () => void {
     // const packet = this.assignPacketId(partialPacket);
     const channel = this.normalizePattern(partialPacket.pattern);
     const serializedPacket = this.serializer.serialize(partialPacket);
 
     this.natsClient
-      .request(channel, this._jc.encode(serializedPacket), { timeout: 60000 }) // 60s timeout
+      .request(channel, this._jc.encode(serializedPacket), { timeout: 30000 }) // 30s timeout
       .then((msg) => {
         callback(this._jc.decode(msg.data));
       })

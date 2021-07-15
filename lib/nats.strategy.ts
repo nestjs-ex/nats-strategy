@@ -2,22 +2,22 @@ import {
   Server,
   CustomTransportStrategy,
   IncomingRequest,
-  ReadPacket,
-  PacketId,
+  // ReadPacket,
+  // PacketId,
   Transport,
 } from '@nestjs/microservices';
 import {
-  CONNECT_EVENT,
-  MESSAGE_EVENT,
-  ERROR_EVENT,
+  // CONNECT_EVENT,
+  // MESSAGE_EVENT,
+  // ERROR_EVENT,
   NO_MESSAGE_HANDLER,
 } from '@nestjs/microservices/constants';
 import { isUndefined } from '@nestjs/common/utils/shared.utils';
 import { Observable } from 'rxjs';
 import * as nats from 'nats';
 
-import { NatsClientOptions } from './interfaces';
-import { NATS_DEFAULT_URL } from './nats-client.constants';
+// import { NatsClientOptions } from './interfaces';
+// import { NATS_DEFAULT_URL } from './nats-client.constants';
 import { NatsContext } from './nats.context';
 
 // Strategy region
