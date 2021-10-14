@@ -24,7 +24,7 @@
     "nats": "^2.1.0"
   },
   "dependencies": {
-    "nanoid": "3.1.25",
+    "nanoid": "3.1.30",
     "nats": "2.2.0"
   },
   "devDependencies": {
