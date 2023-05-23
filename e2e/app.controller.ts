@@ -17,7 +17,7 @@ import { catchError, scan } from 'rxjs/operators';
 import { NatsClient } from '../lib/nats-client.service';
 
 @Controller()
-export class NatsController {
+export class AppController {
   static IS_NOTIFIED = false;
   static IS_NOTIFIED2 = false;
 
