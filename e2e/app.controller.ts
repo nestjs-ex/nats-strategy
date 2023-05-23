@@ -81,22 +81,22 @@ export class AppController {
     };
   }
 
-  @MessagePattern('math.*')
+  @MessagePattern('math.sum')
   sum(@Payload() data: number[], @Ctx() context: NatsContext): number {
     return (data || []).reduce((a, b) => a + b);
   }
 
-  @MessagePattern('async.*')
+  @MessagePattern('async.sum')
   async asyncSum(data: number[]): Promise<number> {
     return (data || []).reduce((a, b) => a + b);
   }
 
-  @MessagePattern('stream.*')
+  @MessagePattern('stream.sum')
   streamSum(data: number[]): Observable<number> {
     return of((data || []).reduce((a, b) => a + b));
   }
 
-  @MessagePattern('streaming.*')
+  @MessagePattern('streaming.sum')
   streaming(data: number[]): Observable<number> {
     return from(data);
   }
