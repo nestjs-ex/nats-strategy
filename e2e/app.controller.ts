@@ -33,7 +33,7 @@ export class AppController {
   ): Promise<Observable<number>> {
     // await this.client.connect();
     // return this.client.send<number>(cmd, data);
-    return 15;
+    return of(15);
   }
 
   @Post('stream')
