@@ -3,7 +3,7 @@ import { INestMicroservice } from '@nestjs/common';
 import { NatsStrategy } from '../lib/nats.strategy';
 import { AppModule } from './app.module';
 
-describe('Stan Strategy (e2e)', () => {
+describe('Nats Strategy (e2e)', () => {
   let app: INestMicroservice;
   let server: NatsStrategy;
 
@@ -28,8 +28,8 @@ describe('Stan Strategy (e2e)', () => {
     await app.close();
   });
   describe('starting', () => {
-    it('should have some subscriptions', () => {
-      expect((server as any)._subscriptions.length).toBeGreaterThan(0);
+    it('should have nats connection', () => {
+      expect((server as any).natsClient.info.version).toBeDefined();
     });
     it('should has "math.sum" subject in pattern map', () => {
       expect((server as any).patternMap.get('math.sum')).toBeDefined();

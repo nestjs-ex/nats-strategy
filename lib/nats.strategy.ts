@@ -36,17 +36,17 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     this.initializeDeserializer(options);
   }
 
-  public listen(callback: () => void) {
+  public async listen(callback: () => void) {
     const options = this.options || ({} as nats.ConnectionOptions);
-    nats
-      .connect({
+
+    try {
+      this.natsClient = await nats.connect({
         ...options,
-      })
-      .then((conn) => {
-        this.natsClient = conn;
-        this.start(callback);
-      })
-      .catch((err) => this.logger.error(err));
+      });
+      this.start(callback);
+    } catch (err) {
+      this.logger.error(err)
+    }
   }
 
   public start(callback?: () => void) {
@@ -87,8 +87,8 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     registeredPatterns.forEach((channel) => subscribe(channel));
   }
 
-  public close() {
-    this.natsClient && this.natsClient.close();
+  public async close() {
+    await this.natsClient?.close();
     this.natsClient = null;
   }
 
@@ -144,6 +144,6 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     // In case "replyTo" topic is not provided, there's no need for a reply.
     // Method returns a noop function instead
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    return () => {};
+    return () => { };
   }
 }
