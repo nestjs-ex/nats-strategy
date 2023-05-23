@@ -31,7 +31,7 @@ export class AppController {
     @Query('command') cmd,
     @Body() data: number[],
   ): Promise<Observable<number>> {
-    // await this.client.connect();
+    await this.client.connect();
     // return this.client.send<number>(cmd, data);
     return of(15);
   }
