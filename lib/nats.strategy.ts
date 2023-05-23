@@ -108,7 +108,7 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     //   return this.handleEvent(channel, message, natsCtx);
     // }
     if (isUndefined(callerSubject.reply)) {
-      return this.handleEvent(channel, message, natsCtx);
+      return this.handleEvent(channel, message as IncomingRequest, natsCtx);
     }
 
     const publish = this.getPublisher(
@@ -126,7 +126,7 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
       return publish(noHandlerPacket);
     }
     const response$ = this.transformToObservable(
-      await handler(message.data, natsCtx),
+      await handler((message as any).data, natsCtx),
     ) as Observable<any>;
     response$ && this.send(response$, publish);
   }
