@@ -16,7 +16,7 @@ describe('NATS transport', () => {
     const module = await Test.createTestingModule({
       imports: [
         NatsClientModule.register({
-          servers: '103.177.111.94:4222'
+          servers: 'localhost:4222'
         })
       ],
       controllers: [AppController],
@@ -27,7 +27,7 @@ describe('NATS transport', () => {
     server = app.getHttpAdapter().getInstance();
 
     const natsStrategy = new NatsStrategy({
-      servers: '103.177.111.94:4222',
+      servers: 'localhost:4222',
     });
     app.connectMicroservice<MicroserviceOptions>({
       strategy: natsStrategy
