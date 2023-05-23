@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import {
   ClientProxy,
   // PacketId,
@@ -17,7 +17,7 @@ import { isObject } from '@nestjs/common/utils/shared.utils';
 // import { NatsClientModuleOptions } from './interfaces';
 
 @Injectable()
-export class NatsClient extends ClientProxy {
+export class NatsClient extends ClientProxy implements OnModuleInit, OnModuleDestroy {
   protected readonly logger = new Logger(NatsClient.name);
   protected readonly url: string;
   protected natsClient: nats.NatsConnection;
@@ -34,12 +34,20 @@ export class NatsClient extends ClientProxy {
     this.initializeDeserializer(options);
   }
 
+  async onModuleInit() {
+    await this.connect();
+  }
+
+  async onModuleDestroy() {
+    await this.close();
+  }
+
   get instance() {
     return this.natsClient;
   }
 
-  public close() {
-    this.natsClient && this.natsClient.close();
+  public async close() {
+    await this.natsClient?.close();
     this.natsClient = null;
   }
 

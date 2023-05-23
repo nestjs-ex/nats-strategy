@@ -16,7 +16,7 @@ describe('NATS transport', () => {
     const module = await Test.createTestingModule({
       imports: [
         NatsClientModule.register({
-          servers: 'localhost:4222'
+          servers: '103.177.111.94:4222'
         })
       ],
       controllers: [AppController],
@@ -27,7 +27,7 @@ describe('NATS transport', () => {
     server = app.getHttpAdapter().getInstance();
 
     const natsStrategy = new NatsStrategy({
-      servers: 'localhost:4222',
+      servers: '103.177.111.94:4222',
     });
     app.connectMicroservice<MicroserviceOptions>({
       strategy: natsStrategy
@@ -36,12 +36,12 @@ describe('NATS transport', () => {
     await app.init();
   });
 
-  // it(`/POST`, () => {
-  //   return request(server)
-  //     .post('/?command=math.sum')
-  //     .send([1, 2, 3, 4, 5])
-  //     .expect(200, '15');
-  // });
+  it(`/POST`, () => {
+    return request(server)
+      .post('/?command=math.sum')
+      .send([1, 2, 3, 4, 5])
+      .expect(200, '15');
+  });
 
   it(`/POST (Promise/async)`, () => {
     return request(server)
@@ -51,12 +51,12 @@ describe('NATS transport', () => {
       .expect(200, '15');
   });
 
-  // it(`/POST (Observable stream)`, () => {
-  //   return request(server)
-  //     .post('/?command=stream.sum')
-  //     .send([1, 2, 3, 4, 5])
-  //     .expect(200, '15');
-  // });
+  it(`/POST (Observable stream)`, () => {
+    return request(server)
+      .post('/?command=stream.sum')
+      .send([1, 2, 3, 4, 5])
+      .expect(200, '15');
+  });
 
   // it(`/POST (streaming)`, () => {
   //   return request(server)
@@ -65,30 +65,30 @@ describe('NATS transport', () => {
   //     .expect(200, '15');
   // });
 
-  // it(`/POST (concurrent)`, () => {
-  //   return request(server)
-  //     .post('/concurrent')
-  //     .send([
-  //       Array.from({ length: 10 }, (v, k) => k + 1),
-  //       Array.from({ length: 10 }, (v, k) => k + 11),
-  //       Array.from({ length: 10 }, (v, k) => k + 21),
-  //       Array.from({ length: 10 }, (v, k) => k + 31),
-  //       Array.from({ length: 10 }, (v, k) => k + 41),
-  //       Array.from({ length: 10 }, (v, k) => k + 51),
-  //       Array.from({ length: 10 }, (v, k) => k + 61),
-  //       Array.from({ length: 10 }, (v, k) => k + 71),
-  //       Array.from({ length: 10 }, (v, k) => k + 81),
-  //       Array.from({ length: 10 }, (v, k) => k + 91),
-  //     ])
-  //     .expect(200, 'true');
-  // });
+  it(`/POST (concurrent)`, () => {
+    return request(server)
+      .post('/concurrent')
+      .send([
+        Array.from({ length: 10 }, (v, k) => k + 1),
+        Array.from({ length: 10 }, (v, k) => k + 11),
+        Array.from({ length: 10 }, (v, k) => k + 21),
+        Array.from({ length: 10 }, (v, k) => k + 31),
+        Array.from({ length: 10 }, (v, k) => k + 41),
+        Array.from({ length: 10 }, (v, k) => k + 51),
+        Array.from({ length: 10 }, (v, k) => k + 61),
+        Array.from({ length: 10 }, (v, k) => k + 71),
+        Array.from({ length: 10 }, (v, k) => k + 81),
+        Array.from({ length: 10 }, (v, k) => k + 91),
+      ])
+      .expect(200, 'true');
+  });
 
-  // it(`/GET (exception)`, () => {
-  //   return request(server).get('/exception').expect(200, {
-  //     message: 'test',
-  //     status: 'error',
-  //   });
-  // });
+  it(`/GET (exception)`, () => {
+    return request(server).get('/exception').expect(200, {
+      message: 'test',
+      status: 'error',
+    });
+  });
 
   // it(`/POST (event notification)`, done => {
   //   request(server)
