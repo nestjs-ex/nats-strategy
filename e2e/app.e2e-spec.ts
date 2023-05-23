@@ -1,44 +1,122 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestMicroservice } from '@nestjs/common';
 import { NatsStrategy } from '../lib/nats.strategy';
-import { AppModule } from './app.module';
+import { NatsClientModule } from '../lib/nats-client.module';
+import { AppController } from './app.controller';
 
-describe('Nats Strategy (e2e)', () => {
-  let app: INestMicroservice;
-  let server: NatsStrategy;
+import { INestApplication } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Test } from '@nestjs/testing';
+import { expect } from 'chai';
+import * as request from 'supertest';
 
-  const bootstrap = async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    server = new NatsStrategy({
-      servers: 'nats://localhost:4222',
-    });
-    app = moduleFixture.createNestMicroservice({
-      strategy: server,
-    });
-    await app.listen();
-  };
+describe('NATS transport', () => {
+  let server;
+  let app: INestApplication;
 
   beforeEach(async () => {
-    await bootstrap();
+    const module = await Test.createTestingModule({
+      imports: [
+        NatsClientModule.register({
+          servers: 'nats://localhost:4222'
+        })
+      ],
+      controllers: [AppController],
+      providers: [],
+    }).compile();
+
+    app = module.createNestApplication();
+    server = app.getHttpAdapter().getInstance();
+
+    const natsStrategy = new NatsStrategy({
+      servers: 'nats://localhost:4222',
+    });
+    app.connectMicroservice<MicroserviceOptions>({
+      strategy: natsStrategy
+    });
+    await app.startAllMicroservices();
+    await app.init();
   });
+
+  it(`/POST`, () => {
+    return request(server)
+      .post('/?command=math.sum')
+      .send([1, 2, 3, 4, 5])
+      .expect(200, '15');
+  });
+
+  it(`/POST (Promise/async)`, () => {
+    return request(server)
+      .post('/?command=async.sum')
+      .send([1, 2, 3, 4, 5])
+      .expect(200)
+      .expect(200, '15');
+  });
+
+  it(`/POST (Observable stream)`, () => {
+    return request(server)
+      .post('/?command=stream.sum')
+      .send([1, 2, 3, 4, 5])
+      .expect(200, '15');
+  });
+
+  it(`/POST (streaming)`, () => {
+    return request(server)
+      .post('/stream')
+      .send([1, 2, 3, 4, 5])
+      .expect(200, '15');
+  });
+
+  it(`/POST (concurrent)`, () => {
+    return request(server)
+      .post('/concurrent')
+      .send([
+        Array.from({ length: 10 }, (v, k) => k + 1),
+        Array.from({ length: 10 }, (v, k) => k + 11),
+        Array.from({ length: 10 }, (v, k) => k + 21),
+        Array.from({ length: 10 }, (v, k) => k + 31),
+        Array.from({ length: 10 }, (v, k) => k + 41),
+        Array.from({ length: 10 }, (v, k) => k + 51),
+        Array.from({ length: 10 }, (v, k) => k + 61),
+        Array.from({ length: 10 }, (v, k) => k + 71),
+        Array.from({ length: 10 }, (v, k) => k + 81),
+        Array.from({ length: 10 }, (v, k) => k + 91),
+      ])
+      .expect(200, 'true');
+  });
+
+  it(`/GET (exception)`, () => {
+    return request(server).get('/exception').expect(200, {
+      message: 'test',
+      status: 'error',
+    });
+  });
+
+  it(`/POST (event notification)`, done => {
+    request(server)
+      .post('/notify')
+      .send([1, 2, 3, 4, 5])
+      .end(() => {
+        setTimeout(() => {
+          expect(AppController.IS_NOTIFIED).to.be.true;
+          expect(AppController.IS_NOTIFIED2).to.be.true;
+          done();
+        }, 1000);
+      });
+  });
+
+  it(`/POST (sending headers with "RecordBuilder")`, () => {
+    const payload = { items: [1, 2, 3] };
+    return request(server)
+      .post('/record-builder-duplex')
+      .send(payload)
+      .expect(200, {
+        data: payload,
+        headers: {
+          ['x-version']: '1.0.0',
+        },
+      });
+  });
+
   afterEach(async () => {
     await app.close();
-  });
-  describe('starting', () => {
-    it('should have nats connection', () => {
-      expect((server as any).natsClient.info.version).toBeDefined();
-    });
-    it('should has "math.sum" subject in pattern map', () => {
-      expect((server as any).patternMap.get('math.sum')).toBeDefined();
-    });
-    it('should has "math.sum1" subject in pattern map', () => {
-      expect((server as any).patternMap.get('{"opts":{"durableName":"test"},"subject":"math.sum1"}')).toBeDefined();
-    });
-    // it('should has "math.sum2" subject in pattern map', () => {
-    //   expect((server as any).patternMap.get('{"opts":undefined,"qGroup":undefined,"subject":"math.sum2"}')).toBeDefined();
-    // });
   });
 });
