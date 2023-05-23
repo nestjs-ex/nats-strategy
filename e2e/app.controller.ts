@@ -120,11 +120,11 @@ export class AppController {
 
   @EventPattern('notification')
   eventHandler(@Payload() data: boolean) {
-    NatsController.IS_NOTIFIED = data;
+    AppController.IS_NOTIFIED = data;
   }
 
   @EventPattern('notification')
   eventHandler2(@Payload() data: boolean) {
-    NatsController.IS_NOTIFIED2 = data;
+    AppController.IS_NOTIFIED2 = data;
   }
 }
