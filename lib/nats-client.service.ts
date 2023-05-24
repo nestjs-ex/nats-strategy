@@ -108,7 +108,7 @@ export class NatsClient extends ClientProxy implements OnModuleInit, OnModuleDes
     const serializedPacket = this.serializer.serialize(partialPacket);
 
     this.natsClient
-      .request(channel, this._jc.encode(serializedPacket), { timeout: 3000 }) // 30s timeout
+      .request(channel, this._jc.encode(serializedPacket), { timeout: 30000 }) // 30s timeout
       .then((msg) => {
         callback(this._jc.decode(msg.data));
       })
