@@ -29,8 +29,8 @@
     "nats": "^2.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.6.6",
-    "@commitlint/config-angular": "17.6.6",
+    "@commitlint/cli": "17.6.7",
+    "@commitlint/config-angular": "17.6.7",
     "@nestjs/common": "9.4.3",
     "@nestjs/core": "9.4.3",
     "@nestjs/microservices": "^9.4.1",
