@@ -4,6 +4,8 @@
   "description": "NATS v2 strategy and client for nestjs microservice",
   "author": "pnthanh",
   "license": "MIT",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "format": "prettier --write \"**/*.ts\"",
     "lint": "eslint \"lib/**/*.ts\" --fix",
