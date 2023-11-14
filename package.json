@@ -1,6 +1,6 @@
 {
   "name": "@nestjs-ex/nats-strategy",
-  "version": "10.0.1",
+  "version": "10.0.2",
   "description": "NATS v2 strategy and client for nestjs microservice",
   "author": "pnthanh",
   "license": "MIT",
