@@ -1,5 +1,7 @@
 {
   "semanticCommits": true,
+  "timezone": "ICT",
+  "schedule": ["every weekend"],
   "packageRules": [{
     "depTypeList": ["devDependencies"],
     "automerge": true
