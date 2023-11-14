@@ -3,7 +3,7 @@ import { NatsClientModule } from '../lib/nats-client.module';
 import { AppController } from './app.controller';
 
 import { INestApplication } from '@nestjs/common';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions } from '@nestjs/microservices';
 import { Test } from '@nestjs/testing';
 import { expect } from 'chai';
 import * as request from 'supertest';
@@ -58,12 +58,12 @@ describe('NATS transport', () => {
       .expect(200, '15');
   });
 
-  // it(`/POST (streaming)`, () => {
-  //   return request(server)
-  //     .post('/stream')
-  //     .send([1, 2, 3, 4, 5])
-  //     .expect(200, '15');
-  // });
+  it(`/POST (streaming)`, () => {
+    return request(server)
+      .post('/stream')
+      .send([1, 2, 3, 4, 5])
+      .expect(200, '15');
+  });
 
   it(`/POST (concurrent)`, () => {
     return request(server)
@@ -90,31 +90,31 @@ describe('NATS transport', () => {
     });
   });
 
-  // it(`/POST (event notification)`, done => {
-  //   request(server)
-  //     .post('/notify')
-  //     .send([1, 2, 3, 4, 5])
-  //     .end(() => {
-  //       setTimeout(() => {
-  //         expect(AppController.IS_NOTIFIED).to.be.true;
-  //         expect(AppController.IS_NOTIFIED2).to.be.true;
-  //         done();
-  //       }, 1000);
-  //     });
-  // });
+  it(`/POST (event notification)`, done => {
+    request(server)
+      .post('/notify')
+      .send([1, 2, 3, 4, 5])
+      .end(() => {
+        setTimeout(() => {
+          expect(AppController.IS_NOTIFIED).to.be.true;
+          expect(AppController.IS_NOTIFIED2).to.be.true;
+          done();
+        }, 1000);
+      });
+  });
 
-  // it(`/POST (sending headers with "RecordBuilder")`, () => {
-  //   const payload = { items: [1, 2, 3] };
-  //   return request(server)
-  //     .post('/record-builder-duplex')
-  //     .send(payload)
-  //     .expect(200, {
-  //       data: payload,
-  //       headers: {
-  //         ['x-version']: '1.0.0',
-  //       },
-  //     });
-  // });
+  it(`/POST (sending headers with "RecordBuilder")`, () => {
+    const payload = { items: [1, 2, 3] };
+    return request(server)
+      .post('/record-builder-duplex')
+      .send(payload)
+      .expect(200, {
+        data: payload,
+        headers: {
+          ['x-version']: '1.0.0',
+        },
+      });
+  });
 
   afterEach(async () => {
     await app.close();
