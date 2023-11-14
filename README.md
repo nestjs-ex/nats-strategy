@@ -95,7 +95,7 @@ NatsClientModule.registerAsync({
 });
 ```
 
-Above construction will instantiate `JwtConfigService` inside `JwtModule` and will leverage it to create options object.
+Above construction will instantiate `NatsClientConfigService` inside `NatsClientModule` and will leverage it to create options object.
 
 ```typescript
 class NatsClientConfigService implements NatsClientOptionsFactory {

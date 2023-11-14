@@ -1,0 +1,40 @@
+name: Release CI
+
+on:
+  push:
+    tags: [ "*" ]
+
+env:
+  NODE_VERSION: "18.x"
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Build package
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publish package
+        run: |
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create release
+        run: |
+          VERSION=${GITHUB_REF/refs\/tags\//}
+          gh release create "${VERSION}" -t "${VERSION}" --generate-notes
+          gh release view "${VERSION}"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
