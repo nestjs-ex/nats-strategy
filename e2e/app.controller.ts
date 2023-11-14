@@ -21,9 +21,7 @@ export class AppController {
   static IS_NOTIFIED = false;
   static IS_NOTIFIED2 = false;
 
-  constructor(
-    private readonly client: NatsClient
-  ) { }
+  constructor(private readonly client: NatsClient) {}
 
   @Post()
   @HttpCode(200)
@@ -55,7 +53,7 @@ export class AppController {
       return result === expected;
     };
     return data
-      .map(async tab => send(tab))
+      .map(async (tab) => send(tab))
       .reduce(async (a, b) => (await a) && b);
   }
 
@@ -105,7 +103,7 @@ export class AppController {
   async getError() {
     return this.client
       .send<number>('exception', {})
-      .pipe(catchError(err => of(err)));
+      .pipe(catchError((err) => of(err)));
   }
 
   @MessagePattern('exception')

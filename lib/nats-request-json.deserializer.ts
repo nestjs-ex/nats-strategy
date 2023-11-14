@@ -1,4 +1,7 @@
-import { IncomingEvent, IncomingRequest } from '@nestjs/microservices/interfaces';
+import {
+  IncomingEvent,
+  IncomingRequest,
+} from '@nestjs/microservices/interfaces';
 import { IncomingRequestDeserializer } from '@nestjs/microservices/deserializers/incoming-request.deserializer';
 import * as nats from 'nats';
 

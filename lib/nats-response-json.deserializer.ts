@@ -1,4 +1,3 @@
-import { NatsCodec } from './interfaces/nats-client.interface';
 import { IncomingResponse } from '@nestjs/microservices/interfaces';
 import { IncomingResponseDeserializer } from '@nestjs/microservices/deserializers/incoming-response.deserializer';
 import * as nats from 'nats';
@@ -7,7 +6,7 @@ import * as nats from 'nats';
  * @publicApi
  */
 export class NatsResponseJSONDeserializer extends IncomingResponseDeserializer {
-  private readonly jsonCodec: NatsCodec<unknown>;
+  private readonly jsonCodec: nats.Codec<unknown>;
 
   constructor() {
     super();

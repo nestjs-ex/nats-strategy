@@ -8,7 +8,8 @@
   "types": "./index.d.ts",
   "scripts": {
     "format": "prettier --write \"**/*.ts\"",
-    "lint": "eslint \"lib/**/*.ts\" --fix",
+    "lint": "eslint \"lib/**/*.ts\"",
+    "lint:fix": "eslint \"lib/**/*.ts\" --fix",
     "test": "jest --config=jest.json",
     "test:watch": "jest --config=jest.json --watch",
     "test:e2e": "jest --config ./e2e/jest-e2e.json",

@@ -1,4 +1,10 @@
-import { Injectable, Inject, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { isObject } from '@nestjs/common/utils/shared.utils';
 import {
   ClientProxy,
@@ -8,16 +14,17 @@ import {
 } from '@nestjs/microservices';
 import { EmptyResponseException } from '@nestjs/microservices/errors/empty-response.exception';
 import * as nats from 'nats';
-import {
-  NATS_CLIENT_MODULE_OPTIONS,
-} from './nats-client.constants';
+import { NATS_CLIENT_MODULE_OPTIONS } from './nats-client.constants';
 import { NatsClientOptions } from './interfaces/nats-client-options.interface';
 import { NatsRecord } from './nats.record-builder';
 import { NatsRecordSerializer } from './nats-record.serializer';
 import { NatsResponseJSONDeserializer } from './nats-response-json.deserializer';
 
 @Injectable()
-export class NatsClient extends ClientProxy implements OnModuleInit, OnModuleDestroy {
+export class NatsClient
+  extends ClientProxy
+  implements OnModuleInit, OnModuleDestroy
+{
   protected readonly logger = new Logger(NatsClient.name);
   protected natsClient: nats.NatsConnection;
 
@@ -196,7 +203,7 @@ export class NatsClient extends ClientProxy implements OnModuleInit, OnModuleDes
       return undefined;
     }
 
-    const headers = requestHeaders as nats.MsgHdrs ?? nats.headers();
+    const headers = (requestHeaders as nats.MsgHdrs) ?? nats.headers();
 
     for (const [key, value] of Object.entries(this.options?.headers || {})) {
       if (!headers.has(key)) {

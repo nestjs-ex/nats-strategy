@@ -16,8 +16,8 @@ describe('NATS transport', () => {
     const module = await Test.createTestingModule({
       imports: [
         NatsClientModule.register({
-          servers: 'localhost:4222'
-        })
+          servers: 'localhost:4222',
+        }),
       ],
       controllers: [AppController],
       providers: [],
@@ -30,7 +30,7 @@ describe('NATS transport', () => {
       servers: 'localhost:4222',
     });
     app.connectMicroservice<MicroserviceOptions>({
-      strategy: natsStrategy
+      strategy: natsStrategy,
     });
     await app.startAllMicroservices();
     await app.init();
@@ -90,7 +90,7 @@ describe('NATS transport', () => {
     });
   });
 
-  it(`/POST (event notification)`, done => {
+  it(`/POST (event notification)`, (done) => {
     request(server)
       .post('/notify')
       .send([1, 2, 3, 4, 5])

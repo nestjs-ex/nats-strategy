@@ -4,9 +4,7 @@ import {
   IncomingRequest,
   Transport,
 } from '@nestjs/microservices';
-import {
-  NO_MESSAGE_HANDLER,
-} from '@nestjs/microservices/constants';
+import { NO_MESSAGE_HANDLER } from '@nestjs/microservices/constants';
 import { isUndefined, isObject } from '@nestjs/common/utils/shared.utils';
 import * as nats from 'nats';
 import { NatsContext } from './nats.context';
@@ -58,7 +56,7 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
       });
 
     const registeredPatterns = [...this.messageHandlers.keys()];
-    registeredPatterns.forEach(channel => subscribe(channel));
+    registeredPatterns.forEach((channel) => subscribe(channel));
   }
 
   public async close() {
@@ -73,7 +71,9 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     });
   }
 
-  public getMessageHandler(channel: string): Function {
+  public getMessageHandler(
+    channel: string,
+  ): (err?: unknown, ...optionalParams: unknown[]) => void {
     return async (error: object | undefined, message: nats.Msg) => {
       if (error) {
         return this.logger.error(error);
@@ -127,7 +127,7 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     // In case the "reply" topic is not provided, there's no need for a reply.
     // Method returns a noop function instead
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    return () => { };
+    return () => {};
   }
 
   public async handleStatusUpdates(client: nats.NatsConnection) {
