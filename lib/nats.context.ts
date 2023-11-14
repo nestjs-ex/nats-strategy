@@ -1,7 +1,6 @@
 import { BaseRpcContext } from '@nestjs/microservices/ctx-host/base-rpc.context';
-import { Msg } from 'nats';
 
-type NatsContextArgs = [Msg];
+type NatsContextArgs = [string, any];
 
 export class NatsContext extends BaseRpcContext<NatsContextArgs> {
   constructor(args: NatsContextArgs) {
@@ -9,9 +8,16 @@ export class NatsContext extends BaseRpcContext<NatsContextArgs> {
   }
 
   /**
-   * Returns the reference to the original message.
+   * Returns the name of the subject.
    */
-  getMessage() {
+  getSubject() {
     return this.args[0];
+  }
+
+  /**
+   * Returns message headers (if exist).
+   */
+  getHeaders() {
+    return this.args[1];
   }
 }

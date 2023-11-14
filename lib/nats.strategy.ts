@@ -2,89 +2,63 @@ import {
   Server,
   CustomTransportStrategy,
   IncomingRequest,
-  // ReadPacket,
-  // PacketId,
   Transport,
 } from '@nestjs/microservices';
 import {
-  // CONNECT_EVENT,
-  // MESSAGE_EVENT,
-  // ERROR_EVENT,
   NO_MESSAGE_HANDLER,
 } from '@nestjs/microservices/constants';
-import { isUndefined } from '@nestjs/common/utils/shared.utils';
-import { Observable } from 'rxjs';
+import { isUndefined, isObject } from '@nestjs/common/utils/shared.utils';
 import * as nats from 'nats';
-
-// import { NatsClientOptions } from './interfaces';
-// import { NATS_DEFAULT_URL } from './nats-client.constants';
 import { NatsContext } from './nats.context';
+import { NatsOptions } from './interfaces/nats-strategy-options.interface';
+import { NatsRecordSerializer } from './nats-record.serializer';
+import { NatsRequestJSONDeserializer } from './nats-request-json.deserializer';
+import { NatsRecord } from './nats.record-builder';
 
 // Strategy region
 export class NatsStrategy extends Server implements CustomTransportStrategy {
   public readonly transportId = Transport.NATS;
 
-  private readonly url: string;
   private natsClient: nats.NatsConnection;
 
   private readonly _jc = nats.JSONCodec();
 
-  constructor(private readonly options: nats.ConnectionOptions) {
+  constructor(private readonly options: NatsOptions) {
     super();
 
     this.initializeSerializer(options);
     this.initializeDeserializer(options);
   }
 
-  public async listen(callback: () => void) {
-    const options = this.options || ({} as nats.ConnectionOptions);
-
+  public async listen(
+    callback: (err?: unknown, ...optionalParams: unknown[]) => void,
+  ) {
     try {
-      this.natsClient = await nats.connect({
-        ...options,
-      });
+      this.natsClient = await this.createNatsClient();
+      this.handleStatusUpdates(this.natsClient);
       this.start(callback);
     } catch (err) {
-      this.logger.error(err)
+      callback(err);
     }
   }
 
-  public start(callback?: () => void) {
+  public start(
+    callback: (err?: unknown, ...optionalParams: unknown[]) => void,
+  ) {
     this.bindEvents(this.natsClient);
     callback();
   }
 
   public bindEvents(client: nats.NatsConnection) {
-    // const queue = this.getOptionsProp(this.options, 'queue');
-    // const subscribe = queue
-    //   ? (channel: string) =>
-    //       client.subscribe(
-    //         channel,
-    //         { queue },
-    //         this.getMessageHandler(channel, client).bind(this),
-    //       )
-    //   : (channel: string) =>
-    //       client.subscribe(
-    //         channel,
-    //         this.getMessageHandler(channel, client).bind(this),
-    //       );
-    const that = this;
-    const subscribe = async (channel: string) => {
-      const sub = client.subscribe(channel) as any;
-
-      for await (const msg of sub) {
-        await that.handleMessage(
-          channel,
-          that._jc.decode(msg.data),
-          client,
-          msg.reply,
-          msg,
-        );
-      }
-    };
+    const queue = this.getOptionsProp(this.options, 'queue');
+    const subscribe = (channel: string) =>
+      client.subscribe(channel, {
+        queue,
+        callback: this.getMessageHandler(channel).bind(this),
+      });
 
     const registeredPatterns = [...this.messageHandlers.keys()];
-    registeredPatterns.forEach((channel) => subscribe(channel));
+    registeredPatterns.forEach(channel => subscribe(channel));
   }
 
   public async close() {
@@ -92,29 +66,36 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
     this.natsClient = null;
   }
 
-  public async handleMessage(
-    channel: string,
-    rawMessage: any,
-    client: nats.NatsConnection,
-    replyTo: string,
-    callerSubject: nats.Msg,
-  ) {
-    const natsCtx = new NatsContext([callerSubject]);
-    const message = this.deserializer.deserialize(rawMessage, {
+  public createNatsClient(): Promise<nats.NatsConnection> {
+    const options = this.options || ({} as nats.ConnectionOptions);
+    return nats.connect({
+      ...options,
+    });
+  }
+
+  public getMessageHandler(channel: string): Function {
+    return async (error: object | undefined, message: nats.Msg) => {
+      if (error) {
+        return this.logger.error(error);
+      }
+      return this.handleMessage(channel, message);
+    };
+  }
+
+  public async handleMessage(channel: string, natsMsg: nats.Msg) {
+    const callerSubject = natsMsg.subject;
+    const rawMessage = natsMsg.data;
+    const replyTo = natsMsg.reply;
+
+    const natsCtx = new NatsContext([callerSubject, natsMsg.headers]);
+    const message = await this.deserializer.deserialize(rawMessage, {
       channel,
       replyTo,
     });
-    // if (isUndefined((message as IncomingRequest).id)) {
-    //   return this.handleEvent(channel, message, natsCtx);
-    // }
-    if (isUndefined(callerSubject.reply)) {
-      return this.handleEvent(channel, message as IncomingRequest, natsCtx);
+    if (isUndefined((message as IncomingRequest).id)) {
+      return this.handleEvent(channel, message, natsCtx);
     }
-
-    const publish = this.getPublisher(
-      callerSubject,
-      (message as IncomingRequest).id,
-    );
+    const publish = this.getPublisher(natsMsg, (message as IncomingRequest).id);
     const handler = this.getHandlerByPattern(channel);
     if (!handler) {
       const status = 'error';
@@ -126,24 +107,67 @@ export class NatsStrategy extends Server implements CustomTransportStrategy {
       return publish(noHandlerPacket);
     }
     const response$ = this.transformToObservable(
-      await handler((message as any).data, natsCtx),
-    ) as Observable<any>;
+      await handler(message.data, natsCtx),
+    );
     response$ && this.send(response$, publish);
   }
 
-  public getPublisher(msg: nats.Msg, id: string) {
-    if (msg.reply) {
+  public getPublisher(natsMsg: nats.Msg, id: string) {
+    if (natsMsg.reply) {
       return (response: any) => {
         Object.assign(response, { id });
-        const outgoingResponse = this.serializer.serialize(response);
-        // return publisher.publish(replyTo, outgoingResponse);
-        return msg.respond(this._jc.encode(outgoingResponse));
+        const outgoingResponse: NatsRecord =
+          this.serializer.serialize(response);
+        return natsMsg.respond(outgoingResponse.data, {
+          headers: outgoingResponse.headers,
+        });
       };
     }
 
-    // In case "replyTo" topic is not provided, there's no need for a reply.
+    // In case the "reply" topic is not provided, there's no need for a reply.
     // Method returns a noop function instead
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => { };
+  }
+
+  public async handleStatusUpdates(client: nats.NatsConnection) {
+    for await (const status of client.status()) {
+      const data =
+        status.data && isObject(status.data)
+          ? JSON.stringify(status.data)
+          : status.data;
+
+      switch (status.type) {
+        case 'error':
+        case 'disconnect':
+          this.logger.error(
+            `NatsError: type: "${status.type}", data: "${data}".`,
+          );
+          break;
+
+        case 'pingTimer':
+          if (this.options.debug) {
+            this.logger.debug(
+              `NatsStatus: type: "${status.type}", data: "${data}".`,
+            );
+          }
+          break;
+
+        default:
+          this.logger.log(
+            `NatsStatus: type: "${status.type}", data: "${data}".`,
+          );
+          break;
+      }
+    }
+  }
+
+  protected initializeSerializer(options: NatsOptions) {
+    this.serializer = options?.serializer ?? new NatsRecordSerializer();
+  }
+
+  protected initializeDeserializer(options: NatsOptions) {
+    this.deserializer =
+      options?.deserializer ?? new NatsRequestJSONDeserializer();
   }
 }

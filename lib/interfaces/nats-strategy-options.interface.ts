@@ -1,7 +1,7 @@
 import type { Deserializer, Serializer } from '@nestjs/microservices/interfaces';
 import type { ConnectionOptions } from 'nats';
 
-export interface NatsClientOptions extends ConnectionOptions {
+export interface NatsOptions extends ConnectionOptions {
   headers?: Record<string, string>;
   queue?: string;
   serializer?: Serializer;
