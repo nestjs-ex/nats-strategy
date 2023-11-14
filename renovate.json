@@ -1,6 +1,6 @@
 {
   "semanticCommits": true,
-  "timezone": "ICT",
+  "timezone": "Asia/Jakarta",
   "schedule": ["every weekend"],
   "packageRules": [{
     "depTypeList": ["devDependencies"],

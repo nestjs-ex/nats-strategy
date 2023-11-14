@@ -3,7 +3,17 @@ name: Build
 on:
   push:
     branches: [main]
+    paths:
+      - 'lib/**'
+      - 'e2e/**'
+      - 'package.json'
+      - 'package-lock.json'
   pull_request:
+    paths:
+      - 'lib/**'
+      - 'e2e/**'
+      - 'package.json'
+      - 'package-lock.json'
 
 env:
   NODE_VERSION: "18.x"
@@ -29,6 +39,7 @@ jobs:
           npm run build
 
   test:
+    needs: build
     name: Test nats strategy
     runs-on: ubuntu-latest
 
