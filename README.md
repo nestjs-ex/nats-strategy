@@ -2,6 +2,19 @@
 
 NATS v2 strategy and client module for [Nest](https://github.com/nestjs/nest)
 
+<!-- Badges -->
+<p align="center">
+  <a href="https://github.com/nestjs-ex/nats-strategy/actions/workflows/development.yml">
+    <img alt="Test CI" src="https://github.com/nestjs-ex/nats-strategy/actions/workflows/development.yml/badge.svg?branch=main&event=push" />
+  </a>
+  <a href="https://www.npmjs.com/package/@nestjs-ex/nats-strategy">
+    <img alt="npm" src="https://img.shields.io/npm/v/@nestjs-ex/nats-strategy.svg?style=flat-square" />
+  </a>
+  <a href="https://www.npmjs.com/package/@nestjs-ex/nats-strategy">
+    <img alt="monthly downloads" src="https://img.shields.io/npm/dm/@nestjs-ex/nats-strategy.svg?style=flat-square" />
+  </a>
+</p>
+
 ## Installation
 
 ```bash
