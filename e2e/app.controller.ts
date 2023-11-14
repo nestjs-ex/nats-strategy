@@ -1,20 +1,16 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import {
-  ClientProxy,
-  ClientProxyFactory,
   Ctx,
   EventPattern,
   MessagePattern,
   NatsContext,
-  NatsRecordBuilder,
   Payload,
   RpcException,
-  Transport,
 } from '@nestjs/microservices';
 import * as nats from 'nats';
 import { from, lastValueFrom, Observable, of, throwError } from 'rxjs';
 import { catchError, scan } from 'rxjs/operators';
-import { NatsClient } from '../lib/nats-client.service';
+import { NatsClient, NatsRecordBuilder } from '../lib'
 
 @Controller()
 export class AppController {
