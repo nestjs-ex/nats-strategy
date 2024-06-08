@@ -39,7 +39,7 @@
     "@nestjs/platform-express": "^10.2.8",
     "@nestjs/testing": "10.3.9",
     "@types/jest": "29.5.12",
-    "@types/node": "20.13.0",
+    "@types/node": "20.14.2",
     "@typescript-eslint/eslint-plugin": "7.11.0",
     "@typescript-eslint/parser": "7.11.0",
     "chai": "^4.3.10",
