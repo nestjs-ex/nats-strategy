@@ -38,7 +38,7 @@
     "@nestjs/microservices": "^10.2.8",
     "@nestjs/platform-express": "^10.2.8",
     "@nestjs/testing": "10.4.1",
-    "@types/jest": "29.5.12",
+    "@types/jest": "29.5.13",
     "@types/node": "20.16.5",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
