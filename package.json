@@ -54,7 +54,7 @@
     "release-it": "19.0.6",
     "rimraf": "6.1.2",
     "supertest": "^7.0.0",
-    "ts-jest": "29.4.5",
+    "ts-jest": "29.4.6",
     "typescript": "5.9.3"
   },
   "lint-staged": {
