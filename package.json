@@ -27,7 +27,7 @@
     "@nestjs/microservices": "^7.6.15 || ^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "dependencies": {
-    "nanoid": "3.3.7",
+    "nanoid": "3.3.11",
     "nats": "^2.18.0"
   },
   "devDependencies": {
